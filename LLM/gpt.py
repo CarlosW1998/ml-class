@@ -19,7 +19,7 @@ dropout = 0.2
 torch.manual_seed(1337)
 
 # wget https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt
-with open('input.txt.data', 'r', encoding='utf-8') as f:
+with open('medical.txt.data', 'r', encoding='utf-8') as f:
     text = f.read()
 
 # here are all the unique characters that occur in this text
@@ -195,41 +195,41 @@ class GPTLanguageModel(nn.Module):
             idx = torch.cat((idx, idx_next), dim=1) # (B, T+1)
         return idx
 
-# model = GPTLanguageModel()
-# m = model.to(device)
-# # print the number of parameters in the model
-# print(sum(p.numel() for p in m.parameters())/1e6, 'M parameters')
-
-# # create a PyTorch optimizer
-# optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
-
-# for iter in range(max_iters):
-
-#     # every once in a while evaluate the loss on train and val sets
-#     if iter % eval_interval == 0 or iter == max_iters - 1:
-#         losses = estimate_loss()
-#         print(f"step {iter}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
-
-#     # sample a batch of data
-#     xb, yb = get_batch('train')
-
-#     # evaluate the loss
-#     logits, loss = model(xb, yb)
-#     optimizer.zero_grad(set_to_none=True)
-#     loss.backward()
-#     optimizer.step()
-
-# # generate from the model
-# context = torch.zeros((1, 1), dtype=torch.long, device=device)
-
-# print(decode(m.generate(context, max_new_tokens=500)[0].tolist()))
-# torch.save(m.state_dict(), "./llm.model")
-#open('more.txt', 'w').write(decode(m.generate(context, max_new_tokens=10000)[0].tolist()))
-
-## test for pretrained model
 model = GPTLanguageModel()
 m = model.to(device)
-model.load_state_dict(torch.load("./llm.model"))
-context = torch.zeros((1, 8), dtype=torch.long, device=device)
-context[0] = torch.FloatTensor(encode("good day"))
+# print the number of parameters in the model
+print(sum(p.numel() for p in m.parameters())/1e6, 'M parameters')
+
+# create a PyTorch optimizer
+optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+
+for iter in range(max_iters):
+
+    # every once in a while evaluate the loss on train and val sets
+    if iter % eval_interval == 0 or iter == max_iters - 1:
+        losses = estimate_loss()
+        print(f"step {iter}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
+
+    # sample a batch of data
+    xb, yb = get_batch('train')
+
+    # evaluate the loss
+    logits, loss = model(xb, yb)
+    optimizer.zero_grad(set_to_none=True)
+    loss.backward()
+    optimizer.step()
+
+# generate from the model
+context = torch.zeros((1, 1), dtype=torch.long, device=device)
+
 print(decode(m.generate(context, max_new_tokens=500)[0].tolist()))
+torch.save(m.state_dict(), "./medical.model")
+# open('more.txt', 'w').write(decode(m.generate(context, max_new_tokens=10000)[0].tolist()))
+
+## test for pretrained model
+# model = GPTLanguageModel()
+# m = model.to(device)
+# model.load_state_dict(torch.load("./llm.model"))
+# context = torch.zeros((1, 8), dtype=torch.long, device=device)
+# context[0] = torch.FloatTensor(encode("good day"))
+# print(decode(m.generate(context, max_new_tokens=500)[0].tolist()))
